@@ -4,7 +4,7 @@
 // Use of this source code is governed by terms that can be
 // found in the LICENSE file in the root of this package.
 
-import { exampleTableCfg, TableCfg } from '@rljson/rljson';
+import { addColumnsToTableCfg, exampleTableCfg, TableCfg } from '@rljson/rljson';
 
 import { IDBFactory } from 'fake-indexeddb';
 import { describe, expect, it } from 'vitest';
@@ -145,5 +145,45 @@ describe('IoIndexedDb', () => {
     expect(rows.tableA._data.length).toBe(1);
 
     await io2.deleteDatabase();
+  });
+
+  it('queries a column added via extension (no index, falls back to a scan)', async () => {
+    const factory = new IDBFactory();
+    const io = new IoIndexedDb({ dbName: 'extension-query-test', factory });
+    await io.init();
+    await io.isReady();
+
+    // Create a table - its original columns get indexes.
+    const tableCfg: TableCfg = exampleTableCfg({ key: 'tableA' });
+    await io.createOrExtendTable({ tableCfg });
+
+    // Extend it with a new string column. Extension never bumps the store
+    // version, so the new column has NO index.
+    const extended = addColumnsToTableCfg(tableCfg, [
+      { key: 'extra', type: 'string', titleShort: 'extra', titleLong: 'Extra' },
+    ]);
+    await io.createOrExtendTable({ tableCfg: extended });
+
+    await io.write({
+      data: {
+        tableA: {
+          _type: 'components',
+          _data: [
+            { a: 'x', b: 1, extra: 'find-me' },
+            { a: 'y', b: 2, extra: 'other' },
+          ],
+        },
+      },
+    });
+
+    // 'extra' is not indexed, so the query scans the store and filters in JS.
+    const result = await io.readRows({
+      table: 'tableA',
+      where: { extra: 'find-me' },
+    });
+    expect(result.tableA._data.length).toBe(1);
+    expect((result.tableA._data[0] as { extra: string }).extra).toBe('find-me');
+
+    await io.deleteDatabase();
   });
 });

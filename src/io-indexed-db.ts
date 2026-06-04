@@ -9,6 +9,7 @@ import { Io, IoTools } from '@rljson/io';
 import { IsReady } from '@rljson/is-ready';
 import { equals, Json, JsonValue } from '@rljson/json';
 import {
+  ColumnCfg,
   ContentType,
   iterateTables,
   iterateTablesSync,
@@ -189,11 +190,14 @@ export class IoIndexedDb implements Io {
 
   /**
    * Ensures an object store exists, creating it inside a `versionchange`
-   * transaction if needed. Reopens are serialized through `_opChain`.
+   * transaction if needed. An index is created for every scalar (string or
+   * number) column so `readRows` can query through it instead of scanning the
+   * whole store. Reopens are serialized through `_opChain`.
    * @param storeName - The name of the object store to ensure
+   * @param columns - The column configurations to derive indexes from
    * @returns A promise resolving once the store exists
    */
-  private _ensureStore(storeName: string): Promise<void> {
+  private _ensureStore(storeName: string, columns: ColumnCfg[]): Promise<void> {
     this._opChain = this._opChain.then(async () => {
       if (this._db.objectStoreNames.contains(storeName)) {
         return;
@@ -202,16 +206,58 @@ export class IoIndexedDb implements Io {
       const newVersion = this._db.version + 1;
       this._db.close();
       this._db = await openDb(this._factory, this._dbName, newVersion, (db) => {
-        db.createObjectStore(storeName, { keyPath: '_hash' });
+        const store = db.createObjectStore(storeName, { keyPath: '_hash' });
+        for (const column of columns) {
+          // `_hash` is the primary key. Only string/number columns can be
+          // IndexedDB keys, so booleans and json columns stay unindexed.
+          if (column.key === '_hash') {
+            continue;
+          }
+          if (column.type === 'string' || column.type === 'number') {
+            store.createIndex(column.key, column.key, { unique: false });
+          }
+        }
       });
     });
 
     return this._opChain;
   }
 
+  /**
+   * Returns the where column whose value can be served by an IndexedDB index,
+   * or null when the query must scan the whole store. A null where value
+   * disables index use because the row filter treats a null condition against
+   * an absent field as a match, so narrowing could drop valid rows.
+   * @param store - The object store being queried
+   * @param where - The where clause of the query
+   * @returns The name of an indexable where column, or null
+   */
+  private _indexableWhereColumn(
+    store: IDBObjectStore,
+    where: { [column: string]: JsonValue },
+  ): string | null {
+    for (const column in where) {
+      if (where[column] === null) {
+        return null;
+      }
+    }
+
+    for (const column in where) {
+      const value = where[column];
+      if (
+        (typeof value === 'string' || typeof value === 'number') &&
+        store.indexNames.contains(column)
+      ) {
+        return column;
+      }
+    }
+
+    return null;
+  }
+
   // ...........................................................................
   private async _initTableCfgs(): Promise<void> {
-    await this._ensureStore('tableCfgs');
+    await this._ensureStore('tableCfgs', IoTools.tableCfgsTableCfg.columns);
     await this._putTableCfgRow(IoTools.tableCfgsTableCfg);
   }
 
@@ -225,7 +271,7 @@ export class IoIndexedDb implements Io {
     const existing = await this._ioTools.tableCfgOrNull(request.tableCfg.key);
 
     if (!existing) {
-      await this._ensureStore(request.tableCfg.key);
+      await this._ensureStore(request.tableCfg.key, request.tableCfg.columns);
       await this._putTableCfgRow(tableCfgHashed);
       return;
     }
@@ -300,8 +346,18 @@ export class IoIndexedDb implements Io {
     const tableCfg = await this._ioTools.tableCfg(request.table);
 
     const tx = this._db.transaction(request.table, 'readonly');
+    const store = tx.objectStore(request.table);
+
+    // Narrow through an index when possible, otherwise scan the whole store.
+    // The JavaScript filter below is applied either way, so the index only
+    // needs to return a superset of the matching rows.
+    const indexColumn = this._indexableWhereColumn(store, request.where);
     const rows = (await requestToPromise(
-      tx.objectStore(request.table).getAll(),
+      indexColumn
+        ? store
+            .index(indexColumn)
+            .getAll(request.where[indexColumn] as IDBValidKey)
+        : store.getAll(),
     )) as Json[];
 
     const filtered = rows.filter((row) => {

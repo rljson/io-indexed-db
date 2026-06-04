@@ -1,11 +1,11 @@
 // @license
-// Copyright (c) 2026 Rljson
+// Copyright (c) 2025 Rljson
 //
 // Use of this source code is governed by terms that can be
 // found in the LICENSE file in the root of this package.
 
 // ⚠️ DO NOT MODIFY THIS FILE DIRECTLY ⚠️
-//
+// 
 // This file is a copy of @rljson/io/test/io-conformance.spec.ts.
 //
 // To make changes, please execute the following steps:
@@ -14,8 +14,8 @@
 //   3. Submit a pull request
 //   4. Publish a the new changes to npm
 
+
 import { hip, hsh, rmhsh } from '@rljson/hash';
-import { Io, IoTestSetup, IoTools } from '@rljson/io';
 import {
   addColumnsToTableCfg,
   exampleTableCfg,
@@ -33,6 +33,8 @@ import {
   expect,
   it,
 } from 'vitest';
+
+import { Io, IoTestSetup, IoTools } from '@rljson/io';
 
 import { testSetup } from './io-conformance.setup';
 import { expectGolden, ExpectGoldenOptions } from './setup/goldens.ts';

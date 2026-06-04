@@ -29,15 +29,29 @@ IndexedDB can only create object stores inside a `versionchange` transaction
 fired by opening the database at a higher version. `_ensureStore()` therefore
 closes and reopens the connection at `version + 1` to create a new store, and
 serializes all such reopens through an internal promise chain to avoid version
-races. Because rows are whole objects, **adding columns to an existing table
-needs no schema change** - only a new `tableCfg` row.
+races. When a store is created, an index is added for every **scalar (string or
+number) column** of the table config so queries can be served without a full
+scan. Because rows are whole objects, **adding columns to an existing table
+needs no schema change** - only a new `tableCfg` row. (Columns added later are
+therefore not indexed; queries on them fall back to a scan, see below.)
 
 ## Queries
 
-`readRows` loads a store's rows via `getAll()` and filters them in JavaScript
-using the same predicate as `IoMem`. This keeps behavior byte-identical to the
-in-memory backend and avoids index churn on schema evolution. A native-index
-optimization for very large stores is a possible future enhancement.
+`readRows` narrows through a native IndexedDB index when it can, otherwise it
+scans the store with `getAll()`. `_indexableWhereColumn()` picks a where column
+to query through the index, requiring:
+
+- a string or number value (booleans and json values are not valid IndexedDB
+  keys), and
+- an existing index for that column.
+
+It returns `null` (forcing a scan) when **any** where value is `null`, because
+the row filter treats a null condition against an absent field as a match, so
+index narrowing could drop valid rows.
+
+Whichever path runs, the same `IoMem` predicate is then applied in JavaScript,
+so the index only needs to return a superset of the matching rows. Output stays
+byte-identical to the in-memory backend.
 
 ## Testing
 
