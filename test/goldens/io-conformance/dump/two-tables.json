@@ -1,0 +1,209 @@
+{
+  "_hash": "jCVJ-MgFPeGVfx3r5tw307",
+  "tableCfgs": {
+    "_type": "tableCfgs",
+    "_data": [
+      {
+        "key": "table1",
+        "columns": [
+          {
+            "key": "_hash",
+            "titleLong": "Hash",
+            "titleShort": "Hash",
+            "type": "string",
+            "_hash": "Np5O9L6tfUaUFTAYyx6g5E"
+          },
+          {
+            "key": "a",
+            "titleLong": "Column A",
+            "titleShort": "A",
+            "type": "string",
+            "_hash": "xcDjJS1rhQTUVCEHgVCX39"
+          },
+          {
+            "key": "b",
+            "titleLong": "Column B",
+            "titleShort": "B",
+            "type": "number",
+            "_hash": "nUn22XHcjGFmnLTAivmyc5"
+          }
+        ],
+        "type": "components",
+        "isHead": true,
+        "isRoot": true,
+        "isShared": false,
+        "_hash": "9jZWK-5WPpnlQHCWSPg80D"
+      },
+      {
+        "key": "table2",
+        "columns": [
+          {
+            "key": "_hash",
+            "titleLong": "Hash",
+            "titleShort": "Hash",
+            "type": "string",
+            "_hash": "Np5O9L6tfUaUFTAYyx6g5E"
+          },
+          {
+            "key": "a",
+            "titleLong": "Column A",
+            "titleShort": "A",
+            "type": "string",
+            "_hash": "xcDjJS1rhQTUVCEHgVCX39"
+          },
+          {
+            "key": "b",
+            "titleLong": "Column B",
+            "titleShort": "B",
+            "type": "number",
+            "_hash": "nUn22XHcjGFmnLTAivmyc5"
+          }
+        ],
+        "type": "components",
+        "isHead": true,
+        "isRoot": true,
+        "isShared": false,
+        "_hash": "IyN6yPSBO7ACRpYiYb0BIm"
+      },
+      {
+        "key": "revisions",
+        "type": "revisions",
+        "isHead": true,
+        "isRoot": true,
+        "isShared": false,
+        "columns": [
+          {
+            "key": "_hash",
+            "type": "string",
+            "titleShort": "Hash",
+            "titleLong": "Row Hash",
+            "_hash": "2QxgcOKzL6zsVCo9Yi_5Ke"
+          },
+          {
+            "key": "table",
+            "type": "string",
+            "titleShort": "Table",
+            "titleLong": "Table Key",
+            "_hash": "dxePvdUNnwg2TdHEAPlzcL"
+          },
+          {
+            "key": "predecessor",
+            "type": "string",
+            "titleShort": "Predecessor",
+            "titleLong": "Predecessor Revision Hash",
+            "_hash": "DX2BPCXbaK-WFn4Oy9hYjg"
+          },
+          {
+            "key": "successor",
+            "type": "string",
+            "titleShort": "Successor",
+            "titleLong": "Successor Revision Hash",
+            "_hash": "w-IMk9JjuBkgt88ddVGV7B"
+          },
+          {
+            "key": "timestamp",
+            "type": "number",
+            "titleShort": "Timestamp",
+            "titleLong": "Revision Timestamp",
+            "_hash": "G9EloAJ1OVidMrffwSVrLt"
+          },
+          {
+            "key": "id",
+            "type": "string",
+            "titleShort": "ID",
+            "titleLong": "Revision ID",
+            "_hash": "gwBBBa7SXFx2Zfz00JYdCR"
+          }
+        ],
+        "_hash": "KFWwSAaR3bnqCwesHeAN4k"
+      },
+      {
+        "_hash": "jERNpYntKnsV66yxoS2xOg",
+        "key": "tableCfgs",
+        "type": "tableCfgs",
+        "isHead": false,
+        "isRoot": false,
+        "isShared": true,
+        "previous": "",
+        "columns": [
+          {
+            "key": "_hash",
+            "type": "string",
+            "titleShort": "Hash",
+            "titleLong": "Row Hash",
+            "_hash": "2QxgcOKzL6zsVCo9Yi_5Ke"
+          },
+          {
+            "key": "key",
+            "type": "string",
+            "titleShort": "Key",
+            "titleLong": "Table Key",
+            "_hash": "vXW6G031fGusGpEgdnVWmt"
+          },
+          {
+            "key": "type",
+            "type": "string",
+            "titleShort": "Type",
+            "titleLong": "Content Type",
+            "_hash": "X2upWVtQ02TKW3mj6SqU0c"
+          },
+          {
+            "key": "isHead",
+            "type": "boolean",
+            "titleShort": "Is Head",
+            "titleLong": "Is Head Table",
+            "_hash": "A-q9m5MVPMRVN6hk4pAMLH"
+          },
+          {
+            "key": "isRoot",
+            "type": "boolean",
+            "titleShort": "Is Root",
+            "titleLong": "Is Root Table",
+            "_hash": "qYiiwGCxzUtxlqIvZeU1rh"
+          },
+          {
+            "key": "isShared",
+            "type": "boolean",
+            "titleShort": "Is Shared",
+            "titleLong": "Is Shared Table",
+            "_hash": "jS9CqQBxXDhz1IB6PET4-P"
+          },
+          {
+            "key": "previous",
+            "type": "string",
+            "titleShort": "Previous",
+            "titleLong": "Previous Table Configuration Hash",
+            "_hash": "0EgSa6oJSjOqjUCqlJzb5E"
+          },
+          {
+            "key": "columns",
+            "type": "jsonArray",
+            "titleShort": "Columns",
+            "titleLong": "Column Configurations",
+            "_hash": "GRV_4vc3xouarDpc1ZXE2_"
+          }
+        ]
+      }
+    ],
+    "_tableCfg": "jERNpYntKnsV66yxoS2xOg",
+    "_hash": "4LOYQDRCXLGZW5PjXbLNgC"
+  },
+  "revisions": {
+    "_type": "revisions",
+    "_data": [],
+    "_tableCfg": "KFWwSAaR3bnqCwesHeAN4k",
+    "_hash": "n0CtU753RpXZnGRTftbONY"
+  },
+  "table1": {
+    "_type": "components",
+    "_data": [],
+    "_tableCfg": "9jZWK-5WPpnlQHCWSPg80D",
+    "_hash": "Uz3ZOFKX1d-0UGs1uO3Z_O"
+  },
+  "table2": {
+    "_type": "components",
+    "_data": [],
+    "_tableCfg": "IyN6yPSBO7ACRpYiYb0BIm",
+    "_hash": "AbXQqlWwOR3Eo81wwxpxvZ"
+  }
+}
